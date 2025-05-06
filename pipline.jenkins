@@ -20,7 +20,7 @@ pipeline {
         stage('Build docker image') {
             steps{
                 dir('docker') {
-                    sh 'docker build -t petrovichpower/jenkins-images:0.1 .'
+                    sh 'docker build -t petrovichpower/jenkins-images:0.2 .'
                 }
             }
         }
@@ -29,14 +29,14 @@ pipeline {
             steps{
                 withDockerRegistry(credentialsId: '	dockerhub-cred-petrovichpower', url: 'https://index.docker.io/v1/') {
                     sh '''
-                        docker push petrovichpower/jenkins-images:0.1
+                        docker push petrovichpower/jenkins-images:0.2
                     '''
                 }
             }
         }    
         stage('Delete docker image locally') {
             steps{
-                sh 'docker rmi petrovichpower/jenkins-images:0.1'
+                sh 'docker rmi petrovichpower/jenkins-images:0.2'
             }
         }
     }
