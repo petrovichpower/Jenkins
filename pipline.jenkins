@@ -1,0 +1,43 @@
+pipeline {
+    agent { label 'master' }
+
+    stages {
+        stage('Docker version') {
+            steps {
+                sh "echo $USER"
+                sh 'docker version'
+            }
+        }
+
+        stage('Checkout') {
+            steps{
+                git branch: 'main',
+                    url: 'https://github.com/petrovichpower/Kubernetes.git'        
+                sh 'pwd'
+                sh 'ls -la'
+            }
+        }
+        stage('Build docker image') {
+            steps{
+                dir('docker') {
+                    sh 'docker build -t petrovichpower/jenkins-images:0.1 .'
+                }
+            }
+        }
+
+        stage('Push docker image to DockerHub') {
+            steps{
+                withDockerRegistry(credentialsId: '	dockerhub-cred-petrovichpower', url: 'https://index.docker.io/v1/') {
+                    sh '''
+                        docker push petrovichpower/jenkins-images:0.1
+                    '''
+                }
+            }
+        }    
+        stage('Delete docker image locally') {
+            steps{
+                sh 'docker rmi petrovichpower/jenkins-images:0.1'
+            }
+        }
+    }
+}
